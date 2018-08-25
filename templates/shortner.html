@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/shortner.css')}}">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style type="text/css">
+      .new1{
+        color: white;
+      }
+      .new1:hover{
+        text-decoration: none;
+      }
+    </style>
+
+    <title>Url Shortner</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">URL Shortner</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <h5><span class="badge badge-light mr-sm-2">Welcome @{{session['username']}}</span></h5>
+      <a href="/logout" class="btn btn-outline-danger my-2 my-sm-0"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
+    </form>
+  </div>
+</nav>
+
+
+    <form action="/{{name}}" method="POST" id="url">
+        <div class="container">
+      <div class="input-group mb-3" style="
+                                            padding-top: 150px;
+                                            padding-left: 200px;
+                                            padding-right: 200px;">
+
+  {{ form.urls(class="form-control", placeholder="URL to Short", onfocus="this.value=''") }}
+  <div class="input-group-append">
+    <button class="btn btn-outline-dark" type="submit" id="button-addon2">ShortURL</button>
+  </div>
+</div>
+    </div>
+    <p>{{msg}}</p>
+    </form>
+<table class="table table-striped table-dark">
+  <thead>
+    <tr>
+      <th scope="col">Shorten URLs</th>
+      <th scope="col">Long URLs</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for document in hi %}
+    <tr>
+      <td><a href="{{ document['real'] }}" class="new1">{{ document['short'] }}</a></td>
+      <td>{{ document['real'] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+   </body>
+</html>
