@@ -1,4 +1,3 @@
-# Importing Files
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_pymongo import PyMongo
 from flask_wtf import FlaskForm
@@ -7,17 +6,18 @@ from pymongo import MongoClient
 from wtforms.validators import InputRequired, Length
 import random
 
-# Initializing global variables
+name = ''
+rand = ''
+
 app = Flask(__name__)
 app.config['SECRET_KEY']= 'TheMainFile'
-client = MongoClient("Enter MongoDb connection string")
-db = client['collectionname']
+client = MongoClient("mongodb://****************************")
+db = client['url_shortner']
 users = db.users
 
-# For making different user objects
 class LoginForm(FlaskForm):
-	username = TextField('username')
-	password = PasswordField('password')
+	username = TextField('username', validators=[InputRequired()])
+	password = PasswordField('password', validators=[InputRequired()])
 	urls = TextField('urls')
 
 @app.route('/', methods=['POST','GET'])
@@ -35,7 +35,7 @@ def index():
 
 	return render_template('signup.html', form=form, msg=msg)
 
-@app.route('/login', methods=['POST','GET'])
+@app.route('/login/', methods=['POST','GET'])
 def login():
 	form = LoginForm()
 	users = db.users
@@ -43,12 +43,14 @@ def login():
 	msg = 'Invalid Username or Password'
 	if request.method == 'POST':
 		search = users.find_one({'username':form.username.data})
-		if search:
-			authu = search['username']
-			authp = search['password']
-			if authu == form.username.data and authp == form.password.data:
-				session['username'] = form.username.data
-				return redirect(url_for('url', name=authu))
+		if search is None:
+			return render_template('index.html', msg=msg, form=form)
+			
+		authu = search['username']
+		authp = search['password']
+		if authu == form.username.data and authp == form.password.data:
+			session['username'] = form.username.data
+			return redirect(url_for('url', name=authu))
 		
 		return render_template('index.html', msg=msg, form=form)
 
@@ -69,7 +71,7 @@ def url(name):
 				rand = random.randint(0, pow(10, 5))
 				temp = "http://127.0.0.1:5000/"+name+"/"+ str(rand)
 				urls.insert({'real':form.urls.data,'short':temp})
-				return redirect(url_for('link', name=name, trunc=str(rand)))
+				return redirect(url_for('url', name=name))
 
 		else:
 			hi = urls.find()
@@ -79,18 +81,18 @@ def url(name):
 
 
 @app.route('/<name>/<trunc>', methods=['POST','GET'])
-def link(name,trunc):
+def link(name,trunc): 
 	urls = db[name]
 	search = urls.find_one({'short':'http://127.0.0.1:5000/'+name+'/'+trunc})
 	if search:
 		return redirect(search['real'])
-
-	return redirect(url_for('url',name=name))
+	return redirect(url_for('url', name=name))
 
 @app.route('/logout')
 def logout():
 	session['username'] = None
 	return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
 	app.secret_key= 'TheMainFile'
