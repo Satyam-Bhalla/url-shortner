@@ -11,7 +11,7 @@ rand = ''
 
 app = Flask(__name__)
 app.config['SECRET_KEY']= 'TheMainFile'
-client = MongoClient("mongodb://****************************")
+client = MongoClient("mongodb://new:user12@ds151012.mlab.com:51012/url_shortner")
 db = client['url_shortner']
 users = db.users
 
